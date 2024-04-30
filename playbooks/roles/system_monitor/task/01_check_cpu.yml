@@ -1,0 +1,12 @@
+# Steps to Check CPU
+---
+
+- name: Check CPU usage
+  shell: mpstat | grep all | awk '{print $3+$5}'
+  register: cpu_usage
+  changed_when: false
+
+- name: Save CPU usage to file
+  copy:
+    content: "{{ cpu_usage.stdout }}"
+    dest: "./output/cpu_usage.txt"
