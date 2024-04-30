@@ -10,7 +10,6 @@
 - name: Check RAM usage
   shell: free | grep Mem | awk '{print $3/$2 * 100.0}'
   register: ram_usage
-  become: true
   changed_when: false
 
 - name: Check Disk usage
@@ -25,11 +24,28 @@
   become: true
   changed_when: false
 
-- name: Create or update Markdown report with system information
+- name: Create Markdown report file with header
   lineinfile:
-    path: "./output/{{ ansible_date_time.date }}_report.md"
-    line: "| {{ inventory_hostname }} | {{ cpu_usage.stdout }} | {{ ram_usage.stdout }} | {{ disk_usage.stdout }} | {{ system_uptime.stdout }} |"
+    path: "/output/{{ ansible_date_time.date }}_report.md"
+    line: "| SUNUCULAR | CPU | RAM | DISK | UPTIME |"
+    insertbefore: BOF
     create: yes
   delegate_to: localhost
-  become: true
   run_once: true
+
+- name: Collect system information
+  shell: |
+    printf "| %s | %s | %s | %s | %s |\n" \
+    "{{ inventory_hostname }}" \
+    "$(mpstat 1 1 | grep Average | awk '{print $3+$5}')%" \
+    "$(free -m | grep Mem | awk '{print $3/$2 * 100.0}')%" \
+    "$(df -h / | grep / | awk '{print $5}')" \
+    "$(uptime -p | cut -d ' ' -f 2-)"
+  register: system_info
+  changed_when: false
+
+- name: Append system information to the Markdown file
+  lineinfile:
+    path: "/output/{{ ansible_date_time.date }}_report.md"
+    line: "{{ system_info.stdout }}"
+  delegate_to: localhost

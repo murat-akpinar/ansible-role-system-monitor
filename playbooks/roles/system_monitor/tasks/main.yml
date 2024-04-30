@@ -3,6 +3,3 @@
 
 - name: "System Check CPU" 
   ansible.builtin.import_tasks: 01_system_check.yml
-
-- name: "Make Output" 
-  ansible.builtin.import_tasks: 02_output.yml
