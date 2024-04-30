@@ -1,0 +1,20 @@
+all:
+  children:
+    hypervisor:
+      hosts:
+        proxmox:
+          ansible_host: 192.168.1.152
+        hyper-v:
+          ansible_host: 192.168.1.152
+    storage_server: 
+      hosts:
+        storage1: 
+          ansible_host: 192.168.1.153
+        storage2:
+          ansible_host: 192.168.1.156
+    web_server:
+      hosts:
+        web1: 
+          ansible_host: 192.168.1.153
+        web2:
+          ansible_host: 192.168.1.156
