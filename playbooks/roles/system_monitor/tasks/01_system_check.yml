@@ -1,51 +1,40 @@
 # Steps to Check CPU
 ---
 
-- name: Check CPU usage
-  shell: mpstat | grep all | awk '{print $3+$5}'
-  register: cpu_usage
-  become: true
-  changed_when: false
+- hosts: all
+  gather_facts: no
+  tasks:
+    - name: Check CPU usage
+      shell: mpstat | grep all | awk '{print $3+$5}'
+      register: cpu_usage
+      become: true
+      changed_when: false
 
-- name: Check RAM usage
-  shell: free | grep Mem | awk '{print $3/$2 * 100.0}'
-  register: ram_usage
-  changed_when: false
+    - name: Check RAM usage
+      shell: free | grep Mem | awk '{print $3/$2 * 100.0}'
+      register: ram_usage
+      changed_when: false
 
-- name: Check Disk usage
-  shell: df -h | grep /dev/sda1 | awk '{print $5}'
-  register: disk_usage
-  become: true
-  changed_when: false
+    - name: Check Disk usage
+      shell: df -h | grep /dev/sda1 | awk '{print $5}'
+      register: disk_usage
+      become: true
+      changed_when: false
 
-- name: Check system uptime
-  shell: uptime -p
-  register: system_uptime
-  become: true
-  changed_when: false
+    - name: Check system uptime
+      shell: uptime -p
+      register: system_uptime
+      become: true
+      changed_when: false
 
-- name: Create Markdown report file with header
-  lineinfile:
-    path: "/output/{{ ansible_date_time.date }}_report.md"
-    line: "| SUNUCULAR | CPU | RAM | DISK | UPTIME |"
-    insertbefore: BOF
-    create: yes
-  delegate_to: localhost
-  run_once: true
-
-- name: Collect system information
-  shell: |
-    printf "| %s | %s | %s | %s | %s |\n" \
-    "{{ inventory_hostname }}" \
-    "$(mpstat 1 1 | grep Average | awk '{print $3+$5}')%" \
-    "$(free -m | grep Mem | awk '{print $3/$2 * 100.0}')%" \
-    "$(df -h / | grep / | awk '{print $5}')" \
-    "$(uptime -p | cut -d ' ' -f 2-)"
-  register: system_info
-  changed_when: false
-
-- name: Append system information to the Markdown file
-  lineinfile:
-    path: "/output/{{ ansible_date_time.date }}_report.md"
-    line: "{{ system_info.stdout }}"
-  delegate_to: localhost
+    - name: Create and append system information to a text file
+      lineinfile:
+        path: "/output/{{ ansible_date_time.date }}_system_report.txt"
+        line: |
+          Sunucu ismi : {{ inventory_hostname }}
+          CPU : {{ cpu_usage.stdout }}%
+          RAM : {{ ram_usage.stdout }}%
+          DISK : {{ disk_usage.stdout }}
+          UP-TIME: {{ system_uptime.stdout }}
+        create: yes
+      delegate_to: localhost
