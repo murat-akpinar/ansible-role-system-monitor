@@ -35,7 +35,7 @@
 
 - name: Create Markdown header in the report file
   lineinfile:
-    path: "./output/{{ ansible_date_time.year }}-{{ ansible_date_time.month }}-{{ ansible_date_time.day }}_system_report.md"
+    path: "./output/{{ ansible_date_time.day }}-{{ ansible_date_time.month }}-{{ ansible_date_time.year }}_system_report.md"
     line: "| Sunucu İsmi | CPU (%) | RAM (%) | Disk (%) | Up-Time |"
     create: yes
     insertbefore: BOF
@@ -47,7 +47,7 @@
 
 - name: Add separator for the Markdown table header
   lineinfile:
-    path: "./output/{{ ansible_date_time.year }}-{{ ansible_date_time.month }}-{{ ansible_date_time.day }}_system_report.md"
+    path: "./output/{{ ansible_date_time.day }}-{{ ansible_date_time.month }}-{{ ansible_date_time.year }}_system_report.md"
     line: "|-------------|---------|---------|----------|-----------------|"
     owner: '1000'
     group: '1000'
@@ -57,7 +57,7 @@
 
 - name: Append system information to the Markdown file
   lineinfile:
-    path: "./output/{{ ansible_date_time.year }}-{{ ansible_date_time.month }}-{{ ansible_date_time.day }}_system_report.md"
+    path: "./output/{{ ansible_date_time.day }}-{{ ansible_date_time.month }}-{{ ansible_date_time.year }}_system_report.md"
     line: "| {{ inventory_hostname }} | {{ cpu_usage.stdout }} | {{ ram_usage.stdout }} | {{ disk_usage.stdout }} | {{ system_uptime.stdout }} |"
     owner: '1000'
     group: '1000'
