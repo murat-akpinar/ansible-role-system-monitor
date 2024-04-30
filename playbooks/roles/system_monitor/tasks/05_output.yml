@@ -11,8 +11,14 @@
   delegate_to: localhost
   run_once: true
 
-- name: Collect system information and append to the Markdown file
+- name: Collect system information for each server
   shell: |
-    echo "| {{ inventory_hostname }} | $(mpstat | grep all | awk '{print $3+$5}')% | $(free -m | grep Mem | awk '{print $3 "MB/" $2 "MB (" $3/$2 * 100.0 "%)" }') | $(df -h | grep /dev/sda1 | awk '{print $5}') | $(uptime -p | cut -d ' ' -f 2-)' |" >> ./output/{{ ansible_date_time.date }}_report.md
-  delegate_to: localhost
+    printf "| %s | %s | %s | %s | %s |\n" "{{ inventory_hostname }}" "$(mpstat | grep all | awk '{print $3+$5}')%" "$(free | grep Mem | awk '{print $3/$2 * 100.0}')%" "$(df -h | grep /dev/sda1 | awk '{print $5}')" "$(uptime -p | cut -d ' ' -f 2-)"
+  register: system_info
   changed_when: false
+
+- name: Append system information to the Markdown file
+  lineinfile:
+    path: "./output/{{ ansible_date_time.date }}_report.md"
+    line: "{{ system_info.stdout }}"
+  delegate_to: localhost

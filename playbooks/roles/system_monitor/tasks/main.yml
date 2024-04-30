@@ -4,14 +4,14 @@
 - name: "System Check CPU" 
   ansible.builtin.import_tasks: 01_check_cpu.yml
 
-- name: "System Check RAM" 
-  ansible.builtin.import_tasks: 02_check_ram.yml
-
-- name: "System Check DISK" 
-  ansible.builtin.import_tasks: 03_check_disk.yml
-
-- name: "System Check UP TIME" 
-  ansible.builtin.import_tasks: 04_check_uptime.yml
-
-- name: "Make Output" 
-  ansible.builtin.import_tasks: 05_output.yml
+#- name: "System Check RAM" 
+#  ansible.builtin.import_tasks: 02_check_ram.yml
+#
+#- name: "System Check DISK" 
+#  ansible.builtin.import_tasks: 03_check_disk.yml
+#
+#- name: "System Check UP TIME" 
+#  ansible.builtin.import_tasks: 04_check_uptime.yml
+#
+#- name: "Make Output" 
+#  ansible.builtin.import_tasks: 05_output.yml

@@ -1,12 +1,30 @@
 # Steps to Check CPU
 ---
 
-- name: Check CPU usage
-  shell: mpstat | grep all | awk '{print $3+$5}'
-  register: cpu_usage
-  changed_when: false
+    - name: Check CPU usage
+      shell: mpstat | grep all | awk '{print $3+$5}'
+      register: cpu_usage
+      changed_when: false
 
-- name: Save CPU usage to file
-  copy:
-    content: "{{ cpu_usage.stdout }}"
-    dest: "./output/cpu_usage.txt"
+    - name: Check RAM usage
+      shell: free | grep Mem | awk '{print $3/$2 * 100.0}'
+      register: ram_usage
+      changed_when: false
+
+    - name: Check Disk usage
+      shell: df -h | grep /dev/sda1 | awk '{print $5}'
+      register: disk_usage
+      changed_when: false
+
+    - name: Check system uptime
+      shell: uptime -p
+      register: system_uptime
+      changed_when: false
+
+    - name: Create or update Markdown report with system information
+      lineinfile:
+        path: "./output/{{ ansible_date_time.date }}_report.md"
+        line: "| {{ inventory_hostname }} | {{ cpu_usage.stdout }} | {{ ram_usage.stdout }} | {{ disk_usage.stdout }} | {{ system_uptime.stdout }} |"
+        create: yes
+      delegate_to: localhost
+      run_once: true
