@@ -1,4 +1,4 @@
-# # Steps to Creat Markdown
+# Steps to Creat Markdown
 ---
 
 - name: Create daily Markdown report file with headers
@@ -9,7 +9,8 @@
       |-----------|-----|-----|------|--------|
     create: yes
   delegate_to: localhost
-  run_once: tru
+  run_once: true
+
 - name: Collect system information and append to the Markdown file
   shell: |
     echo "| {{ inventory_hostname }} | $(mpstat | grep all | awk '{print $3+$5}')% | $(free -m | grep Mem | awk '{print $3 "MB/" $2 "MB (" $3/$2 * 100.0 "%)" }') | $(df -h | grep /dev/sda1 | awk '{print $5}') | $(uptime -p | cut -d ' ' -f 2-)' |" >> ./output/{{ ansible_date_time.date }}_report.md
