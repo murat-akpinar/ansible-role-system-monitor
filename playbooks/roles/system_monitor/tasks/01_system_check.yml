@@ -1,9 +1,6 @@
 # Steps to Check CPU
 ---
 
-- hosts: all
-  gather_facts: no
-  tasks:
     - name: Check CPU usage
       shell: mpstat | grep all | awk '{print $3+$5}'
       register: cpu_usage
