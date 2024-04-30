@@ -4,7 +4,6 @@
 - name: Check CPU usage
   shell: top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1"%"}'
   register: cpu_usage
-  become: true
   changed_when: false
 
 - name: Check RAM usage
@@ -15,13 +14,11 @@
 - name: Check Disk usage
   shell: df -hT / | awk 'NR>1 {print $6}'
   register: disk_usage
-  become: true
   changed_when: false
 
 - name: Check system uptime
   shell: uptime -p
   register: system_uptime
-  become: true
   changed_when: false
 
 - name: Ensure output directory exists
@@ -31,6 +28,7 @@
     mode: '0755'
     owner: '1000'
     group: '1000'
+  become: false
   delegate_to: localhost
 
 - name: Create Markdown header in the report file
@@ -42,6 +40,7 @@
     owner: '1000'
     group: '1000'
     mode: '0644'
+  become: false
   delegate_to: localhost
   run_once: true
 
@@ -52,6 +51,7 @@
     owner: '1000'
     group: '1000'
     mode: '0644'
+  become: false
   delegate_to: localhost
   run_once: true
 
@@ -62,5 +62,6 @@
     owner: '1000'
     group: '1000'
     mode: '0644'
+  become: false
   delegate_to: localhost
 
